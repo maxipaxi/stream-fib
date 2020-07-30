@@ -197,6 +197,7 @@ type 'a lst =
   | Cons of 'a * 'a lst
 
 let xs = Cons (1, Cons (2, Cons (3, Nil)))
+let ys = Cons (4, Cons (5, Cons (6, Nil)))
 
 let rec append xs ys =
   match xs with
@@ -221,6 +222,11 @@ let rev_tail xs = rev_tail_helper xs Nil
 
 let reverse_append xs ys = rev_tail (append xs ys)
 let reverse_append2 xs ys = append (rev_tail ys) (rev_tail xs)
+
+let reverse_append3 xs ys = rev_tail_helper ys (rev_tail_helper xs Nil)
+
+
+
 
 let flip f a b = f b a
 
