@@ -180,5 +180,44 @@ let rec replace_leaves t n =
           , replace_leaves t2 n)
 let replace_min t = replace_leaves t (find_min t)
 
+(* Circular programming - Richard Bird *)
+let rec replace_leaves_onepass_helper t =
+  match t with
+    | Leaf n -> n, fun n -> Leaf n
+    | Node (t1, t2) -> 
+      let n1, f1 = replace_leaves_onepass_helper t1 in
+      let n2, f2 = replace_leaves_onepass_helper t2 in
+      min n1 n2, fun n -> Node (f1 n, f2 n)
+let replace_leaves_onepass t = 
+  let n, f = replace_leaves_onepass_helper t in
+  f n
+
+type 'a lst = 
+  | Nil
+  | Cons of 'a * 'a lst
+
+let rec append xs ys =
+  match xs with
+    | Nil -> ys
+    | Cons (x, xs') -> Cons (x, append xs' ys)
+
+let rec snoC xs x =
+  match xs with
+    | Nil -> Cons (x, Nil)
+    | Cons (x, xs') -> Cons (x, snoC xs' x) 
+
+let rec rev xs =
+  match xs with
+    | Nil -> Nil
+    | Cons (x, xs) -> snoC xs x
+
+
+    
+let flip f a b = f b a
+
+
+
+
+
 
 
