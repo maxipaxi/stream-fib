@@ -178,9 +178,12 @@ let rec replace_leaves t n =
     | Node (t1, t2) -> 
       Node (replace_leaves t1 n
           , replace_leaves t2 n)
+
+(* Time ~ 2n = O(n) *)
 let replace_min t = replace_leaves t (find_min t)
 
 (* Circular programming - Richard Bird *)
+(* Time ~ n = O(n) *)
 let rec replace_leaves_onepass_helper t =
   match t with
     | Leaf n -> n, fun n -> Leaf n
@@ -220,9 +223,11 @@ let rec rev_tail_helper xs acc =
     | Cons (x, xs') -> rev_tail_helper xs' (Cons (x, acc))
 let rev_tail xs = rev_tail_helper xs Nil
 
+(* Time ~ 2n = O(n) *)
 let reverse_append xs ys = rev_tail (append xs ys)
 let reverse_append2 xs ys = append (rev_tail ys) (rev_tail xs)
 
+(* Time ~ n = O(n) *)
 let reverse_append3 xs ys = rev_tail_helper ys (rev_tail_helper xs Nil)
 
 let flip f a b = f b a
@@ -240,8 +245,10 @@ let rec subtract n xs =
     | Nil -> Nil
     | Cons (x, xs') -> Cons (x - n, subtract n xs')
 
+(* Time ~ 3n = O(n) *)
 let subtract_avg xs = subtract (sum xs / length xs) xs
 
+(* Time ~ n = O(n) *)
 let rec sub_avg_helper xs =
   match xs with
     | Nil -> 0, 0, fun n -> Nil
@@ -265,37 +272,66 @@ let rec zip xs ys =
     | Cons (x, xs'), Cons (y, ys') ->
       Cons ((x, y), zip xs' ys')
 
+(* Time ~ 2n = O(n) *)
 let convolution xs ys = zip xs (rev_tail ys)
 
 (* There and back again -- Olivier Danvy, Mayer Goldberg *)
+(* Time ~ n = O(n) *)
 let rec conv xs ys =
   match xs with
     | Nil -> Nil, ys
     | Cons (x, xs') ->
       let (xsr, ys) = conv xs' ys in
       match ys with
+        | Nil -> failwith "Impossible"
         | Cons (y, ys') -> 
           Cons ((x, y), xsr), ys'
 
 let palin = Cons (1, Cons (2, Cons (2, Cons (1, Nil))))
 
+(* Time ~ 2n = O(n) *)
 let rec is_palindrome_helper xs rev_xs =
   match xs, rev_xs with
     | Nil, Nil -> true
     | Cons (x, xs'), Cons (x', rev_xs') -> 
       x = x' && is_palindrome_helper xs' rev_xs'
+    | _ -> failwith "Impossible"
+
 let is_palindrome xs = is_palindrome_helper xs (rev_tail xs)
 
+(* Time ~ n = O(n) *)
 let rec is_palin_helper xs rev_xs =
   match xs with
     | Nil -> true, rev_xs
     | Cons (x, xs') ->
       let palin_so_far, rev_xs = is_palin_helper xs' rev_xs in
       match rev_xs with
+        | Nil -> failwith "Impossible"
         | Cons (x', rev_xs') ->
           x = x' && palin_so_far, rev_xs'
 let is_palin xs = 
   let (palin_so_far, Nil) = is_palin_helper xs xs in
+  palin_so_far
+
+(* Time ~ n/2 = O(n) *)
+let rec is_palin_helper2 xs rev_xs =
+  match xs with
+    | Nil -> true, rev_xs
+    | Cons (x, Nil) ->
+      begin
+        match rev_xs with
+          | Cons (x', rev_xs') ->
+            x = x', rev_xs'
+      end
+    | Cons (x1, Cons (x2, xs')) ->
+      let palin_so_far, rev_xs = is_palin_helper xs' rev_xs in
+      begin
+        match rev_xs with
+          | Cons (x'1, Cons (x'2, rev_xs')) ->
+            x1 = x'2 && x2 = x'1 && palin_so_far, rev_xs'
+      end
+let is_palin2 xs = 
+  let (palin_so_far, _) = is_palin_helper2 xs xs in
   palin_so_far
 
 
