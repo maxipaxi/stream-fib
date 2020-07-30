@@ -154,4 +154,10 @@ let rec mat_expo_fast m n =
       mat_mult half half
     | _ -> 
       mat_mult m (mat_expo_fast m (n - 1))
-    
+
+let fib_mat = Mat (1, 1
+                 , 1, 0)
+let fib_log n = 
+  match mat_expo_fast fib_mat (n + 1) with
+    | Mat (_, _, _, n) -> n
+
