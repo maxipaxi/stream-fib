@@ -158,6 +158,6 @@ let rec mat_expo_fast m n =
 let fib_mat = Mat (1, 1
                  , 1, 0)
 let fib_log n = 
-  match mat_expo_fast fib_mat (n + 1) with
-    | Mat (_, _, _, n) -> n
-
+  match mat_expo_fast fib_mat n with
+    | Mat (_, _, n, _) -> n
+    
