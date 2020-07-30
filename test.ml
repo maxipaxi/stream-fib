@@ -196,6 +196,8 @@ type 'a lst =
   | Nil
   | Cons of 'a * 'a lst
 
+let xs = Cons (1, Cons (2, Cons (3, Nil)))
+
 let rec append xs ys =
   match xs with
     | Nil -> ys
@@ -204,15 +206,22 @@ let rec append xs ys =
 let rec snoC xs x =
   match xs with
     | Nil -> Cons (x, Nil)
-    | Cons (x, xs') -> Cons (x, snoC xs' x) 
+    | Cons (x', xs') -> Cons (x', snoC xs' x) 
 
 let rec rev xs =
   match xs with
     | Nil -> Nil
-    | Cons (x, xs) -> snoC xs x
+    | Cons (x, xs) -> snoC (rev xs) x
 
+let rec rev_tail_helper xs acc =
+  match xs with
+    | Nil -> acc
+    | Cons (x, xs') -> rev_tail_helper xs' (Cons (x, acc))
+let rev_tail xs = rev_tail_helper xs Nil
 
-    
+let reverse_append xs ys = rev_tail (append xs ys)
+let reverse_append2 xs ys = append (rev_tail ys) (rev_tail xs)
+
 let flip f a b = f b a
 
 
