@@ -68,6 +68,53 @@ let rec fib_tail_cps_helper n1 n2 n k =
     | _ -> fib_tail_cps_helper n2 (n1 + n2) (n - 1) k
 let fib_tail_cps n = fib_tail_cps_helper 0 1 n (fun a -> a)
 
+
+(*
+  ( 1  2 )
+  ( 3  4 )
+*)
+type matrix2x2 = Mat of int * int * int * int
+
+let m1 = Mat (1, 2, 3, 4)
+let m2 = Mat (2, 0, 1, 2)
+
+let mat_mult mat1 mat2 = 
+  match mat1, mat2 with 
+    | Mat (m1, m2, m3, m4), Mat (n1, n2, n3, n4) ->
+      Mat (m1 * n1 + m2 * n3, m1 * n2 + m2 * n4
+         , m3 * n1 + m4 * n3, m3 * n2 + m4 * n4)
+
+(* Time: O(n) *)
+let rec mat_expo m n =
+  match n with  
+    | 0 -> Mat (1, 0, 0, 1)
+    | _ -> mat_mult m (mat_expo m (n - 1))
+
+(*
+n ^ a * n ^ b = n ^ (a + b)
+
+m ^ n = m ^ (n/2 + n/2)
+      = m ^ n/2 * m ^ n/2
+*)
+(* Time: O(lg(n)) *)
+let rec mat_expo_fast m n =
+  match n with
+    | 0 -> Mat (1, 0, 0, 1)
+    | _ when n mod 2 = 0 -> 
+      let half = mat_expo_fast m (n / 2) in
+      mat_mult half half
+    | _ -> 
+      mat_mult m (mat_expo_fast m (n - 1))
+
+let fib_mat = Mat (1, 1
+                 , 1, 0)
+let fib_log n = 
+  match mat_expo_fast fib_mat n with
+    | Mat (_, _, n, _) -> n
+    
+
+
+
 type int_tree = 
   | Leaf of int
   | Node of int_tree * int_tree
@@ -118,46 +165,20 @@ let rec mult_leaves_cps_opt_helper t k =
 let mult_leaves_cps_opt t = mult_leaves_cps_opt_helper t (fun i -> i)
 
 
-(*
-  ( 1  2 )
-  ( 3  4 )
-*)
-type matrix2x2 = Mat of int * int * int * int
+let rec find_min t = 
+  match t with
+    | Leaf n -> n
+    | Node (t1, t2) -> 
+      let n1 = find_min t1 in
+      let n2 = find_min t2 in
+      min n1 n2
+let rec replace_leaves t n =
+  match t with
+    | Leaf _ -> Leaf n
+    | Node (t1, t2) -> 
+      Node (replace_leaves t1 n
+          , replace_leaves t2 n)
+let replace_min t = replace_leaves t (find_min t)
 
-let m1 = Mat (1, 2, 3, 4)
-let m2 = Mat (2, 0, 1, 2)
 
-let mat_mult mat1 mat2 = 
-  match mat1, mat2 with 
-    | Mat (m1, m2, m3, m4), Mat (n1, n2, n3, n4) ->
-      Mat (m1 * n1 + m2 * n3, m1 * n2 + m2 * n4
-         , m3 * n1 + m4 * n3, m3 * n2 + m4 * n4)
 
-(* Time: O(n) *)
-let rec mat_expo m n =
-  match n with  
-    | 0 -> Mat (1, 0, 0, 1)
-    | _ -> mat_mult m (mat_expo m (n - 1))
-
-(*
-n ^ a * n ^ b = n ^ (a + b)
-
-m ^ n = m ^ (n/2 + n/2)
-      = m ^ n/2 * m ^ n/2
-*)
-(* Time: O(lg(n)) *)
-let rec mat_expo_fast m n =
-  match n with
-    | 0 -> Mat (1, 0, 0, 1)
-    | _ when n mod 2 = 0 -> 
-      let half = mat_expo_fast m (n / 2) in
-      mat_mult half half
-    | _ -> 
-      mat_mult m (mat_expo_fast m (n - 1))
-
-let fib_mat = Mat (1, 1
-                 , 1, 0)
-let fib_log n = 
-  match mat_expo_fast fib_mat n with
-    | Mat (_, _, n, _) -> n
-    
