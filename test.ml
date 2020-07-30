@@ -282,11 +282,21 @@ let palin = Cons (1, Cons (2, Cons (2, Cons (1, Nil))))
 let rec is_palindrome_helper xs rev_xs =
   match xs, rev_xs with
     | Nil, Nil -> true
-    | Cons (x, xs'), Cons (y, ys') -> 
-      x = y && is_palindrome_helper xs' ys'
+    | Cons (x, xs'), Cons (x', rev_xs') -> 
+      x = x' && is_palindrome_helper xs' rev_xs'
 let is_palindrome xs = is_palindrome_helper xs (rev_tail xs)
 
-
+let rec is_palin_helper xs rev_xs =
+  match xs with
+    | Nil -> true, rev_xs
+    | Cons (x, xs') ->
+      let palin_so_far, rev_xs = is_palin_helper xs' rev_xs in
+      match rev_xs with
+        | Cons (x', rev_xs') ->
+          x = x' && palin_so_far, rev_xs'
+let is_palin xs = 
+  let (palin_so_far, Nil) = is_palin_helper xs xs in
+  palin_so_far
 
 
 
