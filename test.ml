@@ -265,4 +265,20 @@ let rec zip xs ys =
     | Cons (x, xs'), Cons (y, ys') ->
       Cons ((x, y), zip xs' ys')
 
-let conv xs ys = zip xs (rev_tail ys)
+let convolution xs ys = zip xs (rev_tail ys)
+
+(* There and back again -- Olivier Danvy, Mayer Goldberg *)
+let rec conv xs ys =
+  match xs with
+    | Nil -> Nil, ys
+    | Cons (x, xs') ->
+      let (xsr, ys) = conv xs' ys in
+      match ys with
+        | Cons (y, ys') -> 
+          Cons ((x, y), xsr), ys'
+
+
+
+
+
+
