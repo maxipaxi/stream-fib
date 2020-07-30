@@ -32,6 +32,12 @@ let fib3 n =
       | _ -> !l a (n - 1) + !l a (n - 2));
   !l () n
 
+let fib_tester fib = 
+  [
+    fib 5 = 5;
+    fib 8 = 21
+  ]
+
 let rec fib n = 
   match n with
     | 0 -> 0
@@ -42,10 +48,28 @@ let rec fib n =
 let rec fib_tail_helper n1 n2 n =
   match n with
     | 0 -> n1
-    | _ -> fib_tail n2 (n1 + n2) (n - 1)
+    | _ -> fib_tail_helper n2 (n1 + n2) (n - 1)
 let fib_tail n = fib_tail_helper 0 1 n
 
 (* Continuation passing style *)
+let rec fib_cps_helper n k = 
+  match n with
+    | 0 -> k 0
+    | 1 -> k 1
+    | _ -> fib_cps_helper (n - 1) 
+      (fun n1 -> fib_cps_helper (n - 2) 
+      (fun n2 -> k (n1 + n2)))
+let fib_cps n = fib_cps_helper n (fun x -> x)
+
+(* Tail recursive CPS *)
+let rec fib_tail_cps_helper n1 n2 n k =
+  match n with
+    | 0 -> k n1
+    | _ -> fib_tail_cps_helper n2 (n1 + n2) (n - 1) k
+let fib_tail_cps n = fib_tail_cps_helper 0 1 n (fun a -> a)
+
+
+
 
 
 
