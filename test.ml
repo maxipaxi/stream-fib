@@ -68,9 +68,54 @@ let rec fib_tail_cps_helper n1 n2 n k =
     | _ -> fib_tail_cps_helper n2 (n1 + n2) (n - 1) k
 let fib_tail_cps n = fib_tail_cps_helper 0 1 n (fun a -> a)
 
+type int_tree = 
+  | Leaf of int
+  | Node of int_tree * int_tree
 
+let t1 = Node (
+  Node (Leaf 0, Leaf 1), 
+  Node (Leaf 2, Leaf 3))
+let t2 = Node (
+  Node (Leaf 1, Leaf 1), 
+  Node (Leaf 2, Leaf 3))
+      
+let mult_leaves_tester mult = 
+  [
+    mult t1 = 0;
+    mult t2 = 6
+  ]
+  
 
+let rec mult_leaves t =
+  match t with
+    | Leaf i -> i
+    | Node (t1, t2) ->
+      let p1 = mult_leaves t1 in
+      let p2 = mult_leaves t2 in
+      p1 * p2
 
+let rec mult_leaves_cps_helper t k =
+  match t with
+    | Leaf i -> 
+      print_endline "Leaf";
+      k i
+    | Node (t1, t2) ->
+      mult_leaves_cps_helper t1 (fun p1 -> 
+      mult_leaves_cps_helper t2 (fun p2 -> 
+      k (p1 * p2)))
+let mult_leaves_cps t = mult_leaves_cps_helper t (fun i -> i)
+
+let rec mult_leaves_cps_opt_helper t k =
+  match t with
+    | Leaf 0 -> 0
+    | Leaf i -> 
+      print_endline "Leaf";
+      k i
+    | Node (t1, t2) ->
+      mult_leaves_cps_opt_helper t1 (fun p1 -> 
+      mult_leaves_cps_opt_helper t2 (fun p2 -> 
+      k (p1 * p2)))
+let mult_leaves_cps_opt t = mult_leaves_cps_opt_helper t (fun i -> i)
 
 
 
