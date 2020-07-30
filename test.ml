@@ -277,6 +277,14 @@ let rec conv xs ys =
         | Cons (y, ys') -> 
           Cons ((x, y), xsr), ys'
 
+let palin = Cons (1, Cons (2, Cons (2, Cons (1, Nil))))
+
+let rec is_palindrome_helper xs rev_xs =
+  match xs, rev_xs with
+    | Nil, Nil -> true
+    | Cons (x, xs'), Cons (y, ys') -> 
+      x = y && is_palindrome_helper xs' ys'
+let is_palindrome xs = is_palindrome_helper xs (rev_tail xs)
 
 
 
