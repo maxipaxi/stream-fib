@@ -118,5 +118,40 @@ let rec mult_leaves_cps_opt_helper t k =
 let mult_leaves_cps_opt t = mult_leaves_cps_opt_helper t (fun i -> i)
 
 
+(*
+  ( 1  2 )
+  ( 3  4 )
+*)
+type matrix2x2 = Mat of int * int * int * int
 
+let m1 = Mat (1, 2, 3, 4)
+let m2 = Mat (2, 0, 1, 2)
 
+let mat_mult mat1 mat2 = 
+  match mat1, mat2 with 
+    | Mat (m1, m2, m3, m4), Mat (n1, n2, n3, n4) ->
+      Mat (m1 * n1 + m2 * n3, m1 * n2 + m2 * n4
+         , m3 * n1 + m4 * n3, m3 * n2 + m4 * n4)
+
+(* Time: O(n) *)
+let rec mat_expo m n =
+  match n with  
+    | 0 -> Mat (1, 0, 0, 1)
+    | _ -> mat_mult m (mat_expo m (n - 1))
+
+(*
+n ^ a * n ^ b = n ^ (a + b)
+
+m ^ n = m ^ (n/2 + n/2)
+      = m ^ n/2 * m ^ n/2
+*)
+(* Time: O(lg(n)) *)
+let rec mat_expo_fast m n =
+  match n with
+    | 0 -> Mat (1, 0, 0, 1)
+    | _ when n mod 2 = 0 -> 
+      let half = mat_expo_fast m (n / 2) in
+      mat_mult half half
+    | _ -> 
+      mat_mult m (mat_expo_fast m (n - 1))
+    
