@@ -227,6 +227,10 @@ let reverse_append3 xs ys = rev_tail_helper ys (rev_tail_helper xs Nil)
 
 let flip f a b = f b a
 
+let rec length xs =
+  match xs with 
+    | Nil -> 0
+    | Cons (x, xs') -> 1 + length xs'
 let rec sum xs = 
   match xs with 
     | Nil -> 0
@@ -235,15 +239,20 @@ let rec subtract n xs =
   match xs with 
     | Nil -> Nil
     | Cons (x, xs') -> Cons (x - n, subtract n xs')
-let rec length xs =
-  match xs with 
-    | Nil -> 0
-    | Cons (x, xs') -> 1 + length xs'
 
 let subtract_avg xs = subtract (sum xs / length xs) xs
 
+let rec sub_avg_helper xs =
+  match xs with
+    | Nil -> 0, 0, fun n -> Nil
+    | Cons (x, xs') -> 
+      let (length, sum, constructor) = sub_avg_helper xs' in
+      1 + length, x + sum, fun n -> Cons (x - n, constructor n)
+let sub_avg xs =
+  let (length, sum, constructor) = sub_avg_helper xs in
+  constructor (sum / length)
 
-
+  
 
 
 
