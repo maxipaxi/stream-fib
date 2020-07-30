@@ -252,7 +252,17 @@ let sub_avg xs =
   let (length, sum, constructor) = sub_avg_helper xs in
   constructor (sum / length)
 
-  
+(*
+Convolution
+  [1, 2, 3] [4, 5, 6]
+  [(1, 6), (2, 5), (3, 4)]
+*)
 
+let rec zip xs ys =
+  match xs, ys with
+    | Nil, _ -> Nil
+    | _, Nil -> Nil
+    | Cons (x, xs'), Cons (y, ys') ->
+      Cons ((x, y), zip xs' ys')
 
-
+let conv xs ys = zip xs (rev_tail ys)
